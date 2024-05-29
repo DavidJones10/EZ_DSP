@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="cEIE0c" name="EZ_DSP_TESTS" projectType="guiapp" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyName="EZ_DSP">
+  <MAINGROUP id="c2urxh" name="EZ_DSP_TESTS">
+    <GROUP id="{31DF541D-798D-8582-26A8-DB66AD80E89C}" name="EZ_DSP">
+      <FILE id="SlpxKv" name="biquad.cpp" compile="1" resource="0" file="../EZ_DSP/biquad.cpp"/>
+      <FILE id="irakhk" name="biquad.h" compile="0" resource="0" file="../EZ_DSP/biquad.h"/>
+      <FILE id="NgY5r1" name="chorus.cpp" compile="1" resource="0" file="../EZ_DSP/chorus.cpp"/>
+      <FILE id="MKOKDD" name="chorus.h" compile="0" resource="0" file="../EZ_DSP/chorus.h"/>
+      <FILE id="ksY1Qz" name="delay_line.h" compile="0" resource="0" file="../EZ_DSP/delay_line.h"/>
+      <FILE id="Cd7Tgn" name="dsp.h" compile="0" resource="0" file="../EZ_DSP/dsp.h"/>
+      <FILE id="UAwSIT" name="EZ_DSP.h" compile="0" resource="0" file="../EZ_DSP/EZ_DSP.h"/>
+      <FILE id="keAqQp" name="flanger.cpp" compile="1" resource="0" file="../EZ_DSP/flanger.cpp"/>
+      <FILE id="VyBexh" name="flanger.h" compile="0" resource="0" file="../EZ_DSP/flanger.h"/>
+      <FILE id="R5lcrE" name="kickDrum.cpp" compile="1" resource="0" file="../EZ_DSP/kickDrum.cpp"/>
+      <FILE id="F3xy0K" name="kickDrum.h" compile="0" resource="0" file="../EZ_DSP/kickDrum.h"/>
+      <FILE id="tgbH3E" name="oscillator.cpp" compile="1" resource="0" file="../EZ_DSP/oscillator.cpp"/>
+      <FILE id="QG96tG" name="oscillator.h" compile="0" resource="0" file="../EZ_DSP/oscillator.h"/>
+      <FILE id="EoCNpO" name="overdrive.cpp" compile="1" resource="0" file="../EZ_DSP/overdrive.cpp"/>
+      <FILE id="NZNmNp" name="overdrive.h" compile="0" resource="0" file="../EZ_DSP/overdrive.h"/>
+      <FILE id="I447CO" name="phaser.cpp" compile="1" resource="0" file="../EZ_DSP/phaser.cpp"/>
+      <FILE id="Pfyihq" name="phaser.h" compile="0" resource="0" file="../EZ_DSP/phaser.h"/>
+      <FILE id="RPsNue" name="tremolo.cpp" compile="1" resource="0" file="../EZ_DSP/tremolo.cpp"/>
+      <FILE id="OoQR0u" name="tremolo.h" compile="0" resource="0" file="../EZ_DSP/tremolo.h"/>
+      <FILE id="Eus8jJ" name="wave_table_osc.h" compile="0" resource="0"
+            file="../EZ_DSP/wave_table_osc.h"/>
+    </GROUP>
+    <GROUP id="{74C5288E-95D8-4D05-C0C1-2687A966BE33}" name="Source">
+      <FILE id="rJSY7a" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="lQqQKn" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="aPDscV" name="MainComponent.cpp" compile="1" resource="0"
+            file="Source/MainComponent.cpp"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="EZ_DSP_TESTS"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="EZ_DSP_TESTS"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../../Applications/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
