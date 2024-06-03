@@ -3,6 +3,7 @@
 #define EZ_DSP_CHORUS_H
 
 #include "delay_line.h"
+#include "wave_table_osc.h"
 
 namespace EZ_DSP
 {
@@ -56,15 +57,13 @@ class ChorusEngine
         void addPhaseOffset(float offset);
     private:
         float feedback;
-        float LfoFreq;
         float delay;
         float sampleRate;
         float LfoAmp;
-        float LfoPhase;
         float dryWet;
-        static constexpr int32_t maxDelaySize = 2400; // 50ms max
+        static constexpr int32_t maxDelaySize = 3600; // 70ms max
         DelayLine<float, maxDelaySize> delLine;
-        float processLfo();
+        WaveTableOsc<256> lfo;
 };
 
 class Chorus
@@ -94,17 +93,6 @@ class Chorus
         /** Sets pan for each channel individually
             \param panLeft expects 0-1, 0 is left, 1 is right
             \param panRight expects 0-1, 0 is left, 1 is right
-        */
-        void setPan(float panLeft, float panRight);
-
-        /** Sets pan for both channels 
-            \param pan expects 0-1, 0 is left, 1 is right
-        */
-        void setPan(float pan);
-
-        /** Sets lfo depth for each channel independently
-            \param depthLeft expects 0-1
-            \param depthRight expects 0-1
         */
         void setLfoDepth(float depthLeft, float depthRight);
 
@@ -171,7 +159,6 @@ class Chorus
     private:
         ChorusEngine engines[2];
         float gainFraction;
-        float pans[2];
         float signalL, signalR;
         float phaseOffset;
 };

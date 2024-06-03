@@ -115,6 +115,10 @@ namespace EZ_DSP
         return pow(10.0f, dB / 40.0f);
    }
 
+    inline float lerp(float sample1, float sample2, float inPhase){
+        return (1-inPhase) * sample1 + inPhase * sample2;
+    }
+
 
 }
 #endif

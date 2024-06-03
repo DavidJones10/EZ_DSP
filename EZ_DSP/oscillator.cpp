@@ -15,7 +15,7 @@ void Oscillator::init(float sample_rate)
     endOfRise_             = true;
 }
 
-float Oscillator::process()
+float Oscillator::tick()
 {
     float output, t;
     switch (waveType)

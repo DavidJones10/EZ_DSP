@@ -8,17 +8,20 @@ MainComponent::MainComponent()
     setSize (800, 600);
     
     osc_amp_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    osc_amp_slider.setRange(0.f, 1000.f);
+    osc_amp_slider.setRange(0.f, 1.f);
     osc_amp_slider.setName(juce::String("OSC AMP"));
     osc_freq_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     osc_freq_slider.setName(juce::String("OSC FREQ"));
-    osc_freq_slider.setRange(20.f, 10000.f);
+    osc_freq_slider.setRange(20.f, 20000.f);
     param_1_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    param_1_slider.setRange(0.f, 1.f);
+    param_1_slider.setRange(0.01f, 5.f);
     param_2_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    param_2_slider.setRange(0.1f, 400.f);
+    param_2_slider.setRange(0.f, 1.f);
     param_3_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    param_3_slider.setRange(0.01f, 10.f);
+    param_3_slider.setRange(-25.f, 25.f);
+    param_5_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    param_5_slider.setRange(10.f, 15000.f);
+    
     osc_type_box.setTextWhenNothingSelected(juce::String("OSC Type"));
     param_4_box.setTextWhenNothingSelected(juce::String("Filter Type"));
     osc_type_box.addItemList(osc_types, 1);
@@ -27,6 +30,7 @@ MainComponent::MainComponent()
     param_1_slider.addListener(this);
     param_2_slider.addListener(this);
     param_3_slider.addListener(this);
+    param_5_slider.addListener(this);
     param_4_box.addListener(this);
     osc_amp_slider.addListener(this);
     osc_freq_slider.addListener(this);
@@ -40,6 +44,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(param_2_slider);
     addAndMakeVisible(param_3_slider);
     addAndMakeVisible(param_4_box);
+    addAndMakeVisible(param_5_slider);
     
     
     // Some platforms require permissions to open input channels so request that here
@@ -72,21 +77,16 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     // but be careful - it will be called on the audio thread, not the GUI thread.
 
     // For more details, see the help for AudioProcessor::prepareToPlay()
-    //biq.init(sampleRate);
-    //biq.setAllParams(1000.f, 5.f, 10.f, EZ_DSP::FilterType::LOWPASS);
+    trem.init(sampleRate);
+    
     osc.init(sampleRate);
     osc.setWaveType(EZ_DSP::Oscillator::WaveType::SAW);
     osc.setFreq(osc_freq);
     osc.setAmplitude(1.f);
+        
+    //phaser.init(sampleRate);
+    //phaser.setDryWet(1.f);
     
-    wave_osc.init(sampleRate);
-    
-    //chorus.init(sampleRate);
-    //chorus.setDelayMs(20.f);
-    //chorus.setFeedback(0.75f);
-    //chorus.setLfoDepth(1.f);
-    //chorus.setLfoFreq(0.5f);
-    //chorus.setDryWet(1.f);
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -94,34 +94,30 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
     osc.setWaveType(osc_type-1);
     osc.setAmplitude(osc_amp);
     osc.setFreq(osc_freq);
-    wave_osc.setAmplitude(param_1);
-    //wave_osc.setFrequency(param_2);
     
-
-    //chorus.setPhaseOffset(param_2);
-    //chorus.setFeedback(EZ_DSP::fclamp(static_cast<float>(param_4_value-1)/4.f,0.f,1.f));
-    //chorus.setLfoDepth(param_1);
-    //chorus.setLfoFreq(param_3);
-    
-    //biq.setAllParams(param_1, param_2, param_3, static_cast<EZ_DSP::FilterType>(param_4_value-1));
+    //phaser.setFreq(param_5);
+    //phaser.setFeedback(param_3);
+    //phaser.setLfoDepth(param_2);
+    //phaser.setLfoFrequency(param_1);
+    //phaser.setNumPoles(param_4_value);
+    trem.setRate(param_1);
+    trem.setDepth(param_2);
     bufferToFill.clearActiveBufferRegion();
     auto buffer = bufferToFill.buffer;
     //auto* leftChannel = buffer->getWritePointer(0);
     //auto* rightChannel =  buffer->getWritePointer(1);
     
     for (int i=0; i < buffer->getNumSamples();i++){
-        wave_osc.setFrequency(osc.process()+param_2);
-        //float osc_val = osc.process();
-        float osc_val = wave_osc.tick();
+
+        float osc_val = osc.tick();
         //float left_sample = leftChannel[i];
         //float right_sample = rightChannel[i];
-        //float filtered = biq.process(osc_val);
-        //float effectedL = chorus.process(osc_val);
-        //float effectedR = chorus.process(osc_val);
-        //float out_sampleL = bypass.getToggleStateValue().getValue() ? osc_val : effectedL;
-        //float out_sampleR = bypass.getToggleStateValue().getValue() ? osc_val : effectedR;
-        float out_sampleL = osc_val;
-        float out_sampleR = osc_val;
+        float effectedL = trem.process(osc_val);
+        float effectedR = effectedL;
+        float out_sampleL = bypass.getToggleStateValue().getValue() ? osc_val : effectedL;
+        float out_sampleR = bypass.getToggleStateValue().getValue() ? osc_val : effectedR;
+        //float out_sampleL = osc_val;
+        //float out_sampleR = osc_val;
         buffer->setSample(0, i, out_sampleL);
         buffer->setSample(1, i, out_sampleR);
     }
@@ -155,6 +151,7 @@ void MainComponent::resized()
     param_1_slider.setBounds(params_x, param_4_box.getBottom(), sliderWidth, sliderHeight);
     param_2_slider.setBounds(params_x, param_1_slider.getBottom(), sliderWidth, sliderHeight);
     param_3_slider.setBounds(params_x, param_2_slider.getBottom(), sliderWidth, sliderHeight);
+    param_5_slider.setBounds(params_x, param_3_slider.getBottom(), sliderWidth, sliderHeight);
     bypass.setBounds(500, 10, 100, 100);
     
     

@@ -3,16 +3,15 @@ using namespace EZ_DSP;
 void Biquad::init(float sample_rate)
 {
     sampleRate = sample_rate;
+    v1 = v2 = 0;
     calculateCoefficients();
 }
-float Biquad::process(float inputSample)
-{
-    float output = b0 * inputSample + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
-    x2 = x1;
-    x1 = inputSample;
-    y2 = y1;
-    y1 = output;    
-    return output/a0;
+float Biquad::process(float in_sample) {
+    float v0 = in_sample - a1 * v1 - a2 * v2;
+    float output = b0 * v0 + b1 * v1 + b2 * v2;
+    v2 = v1;
+    v1 = v0;
+    return output;
 }
 void Biquad::calculateCoefficients()
 {
@@ -87,4 +86,12 @@ void Biquad::calculateCoefficients()
             b2 = (1.0f - cosW0) *.5f / a0;
             break;
     }
+    float a0_recip = 1.f/a0;
+    a1 *= a0_recip;
+    a2 *= a0_recip;
+    b0 *= a0_recip;
+    b1 *= a0_recip;
+    b2 *= a0_recip;
+    a0 = 1.f;
+    
 }

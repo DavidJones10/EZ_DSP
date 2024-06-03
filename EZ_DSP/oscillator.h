@@ -18,7 +18,7 @@ public:
      */
     void init(float sample_rate);
     // Processes the oscillator; should be called on a sample by sample basis
-    float process();
+    float tick();
     /** Sets amplitude for the oscillator
      * @param amp amplitude for the oscillator
      */

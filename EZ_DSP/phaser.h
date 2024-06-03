@@ -3,6 +3,7 @@
 #define EZ_DSP_PHASER_H
 
 #include "delay_line.h"
+#include "wave_table_osc.h"
 
 namespace EZ_DSP
 {
@@ -44,19 +45,20 @@ class PhaserEngine
             \param wet expects 0-1
         */
         void setDryWet(float wet);
+    
     private:
-        float feedback; 
-        float LfoFreq; // LFO Rate
-        float LfoAmp; // LFO Depth
-        float LfoPhase; // LFO Phase
+        float feedback;
         float sampleRate;
         float delTime; 
         float dryWet;
+        float lfoAmp;
         float freqOffset;  
-        float allpassFreq; 
+        float allpassFreq;
+        float last_sample;
         static constexpr int32_t maxDelaySize = 2400; // 50ms max
         DelayLine<float, maxDelaySize> delLine;
-        float processLfo();
+        WaveTableOsc<256> lfo;
+        
 
 };
 

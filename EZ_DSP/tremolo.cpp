@@ -5,21 +5,20 @@ using namespace EZ_DSP;
 void Tremolo::init(float sample_rate)
 {
     osc.init(sample_rate);
-    setWaveform(0);
     setDepth(1.f);
     setRate(1.f);
 }
 
 float Tremolo::process(float input)
 {
-    float modulator = osc.process() + dc_offset;
+    float modulator = osc.tick() + dc_offset;
     return (modulator * input);
 }
 
 void Tremolo::setRate(float rate)
 {
     rate = fclamp(rate, 0.f, 10.f);
-    osc.setFreq(rate);
+    osc.setFrequency(rate);
 }
 
 void Tremolo::setDepth(float depth)
@@ -30,7 +29,3 @@ void Tremolo::setDepth(float depth)
     dc_offset = 1.0f - depth;
 }
 
-void Tremolo::setWaveform(int waveform)
-{
-    osc.setWaveType(waveform);
-}

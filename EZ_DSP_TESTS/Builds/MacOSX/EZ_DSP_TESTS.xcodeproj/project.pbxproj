@@ -111,6 +111,7 @@
 		EC931FE981A03A1F2C59AB06 /* include_juce_audio_formats.mm */ /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
 		F648EF7409827AA782E2F1D1 /* overdrive.cpp */ /* overdrive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = overdrive.cpp; path = ../../../EZ_DSP/overdrive.cpp; sourceTree = SOURCE_ROOT; };
 		F6D1895E8907CEEA716785EA /* juce_audio_utils */ /* juce_audio_utils */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_utils; path = /Applications/JUCE/modules/juce_audio_utils; sourceTree = "<absolute>"; };
+		F72F035030C4CD1F1640EC23 /* ring_buffer.h */ /* ring_buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ring_buffer.h; path = ../../../EZ_DSP/ring_buffer.h; sourceTree = SOURCE_ROOT; };
 		F8A7D08CBB9EA6D50E1C7E80 /* juce_graphics */ /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = /Applications/JUCE/modules/juce_graphics; sourceTree = "<absolute>"; };
 		FB98B337CB4A434B0FE11C98 /* dsp.h */ /* dsp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = dsp.h; path = ../../../EZ_DSP/dsp.h; sourceTree = SOURCE_ROOT; };
 		FD028C9A18207A716E0B25CA /* include_juce_audio_basics.mm */ /* include_juce_audio_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_basics.mm; path = ../../JuceLibraryCode/include_juce_audio_basics.mm; sourceTree = SOURCE_ROOT; };
@@ -183,6 +184,7 @@
 				D7E0C4099D1E6E43052113B2,
 				5DE0935E0FBED4F1E18BC7E4,
 				CD443D82CD4A51551F550086,
+				F72F035030C4CD1F1640EC23,
 				D0592152BEEB9793AB079E8E,
 				9862B9C9AF90A566E6F0E6FB,
 				6D1141A55CC6C8938DC8015D,

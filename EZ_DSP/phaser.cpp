@@ -6,26 +6,24 @@ using namespace EZ_DSP;
 void PhaserEngine::init(float sample_rate)
 {
     sample_rate = sampleRate;
+    lfo.init(sample_rate);
     delLine.init();
-    
-    LfoAmp = 0.f;
     feedback = .3f;
     setFreq(200.f);
     delLine.setDelay(0.f);
 
     freqOffset = 30.f; // 30Hz
     delTime = 0.f;
-    LfoPhase = 0.f;
+    last_sample = 0.f;
     setLfoFrequency(.3f);
     setLfoDepth(.9f);
 }
 
 float PhaserEngine::process(float input)
 {
-    float lfoSig = processLfo();
-    fonepole(delTime, sampleRate / (lfoSig + allpassFreq + freqOffset), .0001f);
-    float out = delLine.allpass(input, delTime, .3f);
-    return (1.f-dryWet) * input + dryWet * out;
+    fonepole(delTime, sampleRate / (lfo.tick() + allpassFreq + freqOffset), .0001f);
+    last_sample = delLine.allpass(input + feedback*last_sample, delTime, .3f);
+    return (1.f-dryWet) * input + dryWet * last_sample;
 }
 
 void PhaserEngine::setFeedback(float fback)
@@ -35,17 +33,20 @@ void PhaserEngine::setFeedback(float fback)
 
 void PhaserEngine::setLfoFrequency(float frequency)
 {
-    LfoFreq = fclamp(0, 0.f, 10.f);
+    frequency = fclamp(frequency, 0.f, 10.f);
+    lfo.setFrequency(frequency);
 }
 
 void PhaserEngine::setLfoDepth(float depth)
 {
-    LfoAmp = fclamp(depth,0.f, 1.f);
+    lfoAmp = fclamp(depth,0.f, 1.f);
+    lfo.setAmplitude(lfoAmp*allpassFreq);
 }
 
 void PhaserEngine::setFreq(float apFreq)
 {
     allpassFreq = fclamp(apFreq, 0.f, 20000.f);
+    lfo.setAmplitude(lfoAmp*allpassFreq);
 }
 
 void PhaserEngine::setDryWet(float wet)
@@ -53,12 +54,6 @@ void PhaserEngine::setDryWet(float wet)
     dryWet = fclamp(wet,0.f,1.f);
 }
 
-float PhaserEngine::processLfo()
-{
-    LfoPhase += LfoFreq;
-    if (LfoPhase >= 1.0f) LfoPhase -= 2.0f; 
-    return LfoAmp * sinf(TWOPI_F * LfoPhase) * allpassFreq;
-}
 
 // Actual Phaser effect
 
@@ -78,7 +73,7 @@ float Phaser::process(float input)
     {
         out += engines[i].process(input);
     } 
-    return out;
+    return out / numPoles;
 }
 
 void Phaser::setNumPoles(int poles)
@@ -107,6 +102,13 @@ void Phaser::setLfoFrequency(float frequency)
     for (int i=0; i < maxPoles; i++)
     {
         engines[i].setLfoFrequency(frequency);
+    }
+}
+
+void Phaser::setFreq(float allpassFreq){
+    for (int i=0; i < maxPoles; i++)
+    {
+        engines[i].setFreq(allpassFreq);
     }
 }
 

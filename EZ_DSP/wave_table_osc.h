@@ -25,20 +25,28 @@ public:
         setAmplitude(1.f);
         calculate_wavetable();
         sampleRateInv = 1.f / sample_rate;
+        phase_offset = 0.f;
     }
+    
     float tick(){
-        if (phase >= max_number_samples){
+        if (phase + phase_offset >= max_number_samples){
             phase -= max_number_samples;
         }
-        float out_sample = lerp_from_phase(phase);
+        float out_sample = lerp_from_phase(phase+phase_offset);
         phase += phase_step;
         return out_sample * amplitude;
     }
+    
     void setFrequency(float frequency){
         phase_step = frequency * sampleRateInv * max_number_samples;
     }
+    
     void setAmplitude(float amplitude_){
         amplitude = amplitude_;
+    }
+    
+    void add_phase_offset(float offset){
+        phase_offset = offset;
     }
 private:
     
@@ -63,7 +71,7 @@ private:
     }
     
     float waveTable[max_number_samples];
-    float amplitude, phase_step, sampleRateInv, phase;
+    float amplitude, phase_step, sampleRateInv, phase, phase_offset;
 };
 }; // namespace EZ_DSP
 

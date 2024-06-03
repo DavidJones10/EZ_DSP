@@ -58,6 +58,7 @@ public:
         dBGain = dbGain;
         calculateCoefficients();
     }
+    /// Set param values for all params at once
     inline void setAllParams(float cutoff_, float q_, float dbGain, FilterType type)
     {
         cutoff = cutoff_;
@@ -66,12 +67,20 @@ public:
         dBGain = dbGain;
         calculateCoefficients();
     }
-
+    /// Method for setting coefficients manually
+    inline void setRawCoefficients(float a0_, float a1_, float a2_, float b0_, float b1_, float b2_){
+        a0 = a0_;
+        a1 = a1_;
+        a2 = a2_;
+        b0 = b0_;
+        b1 = b1_;
+        b2 = b2_;
+    }
 
 private:
     float sampleRate, cutoff, q, dBGain; 
     float b0, b1, b2, a0, a1, a2;
-    float  x1, x2, y1, y2;
+    float  v1, v2;
     void calculateCoefficients();
     FilterType filterType;
 };

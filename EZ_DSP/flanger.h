@@ -3,6 +3,7 @@
 #define EZ_DSP_FLANGER_H
 
 #include "delay_line.h"
+#include "wave_table_osc.h"
 
 namespace EZ_DSP
 {
@@ -44,11 +45,6 @@ class Flanger
         */
         void setDelayMs(float delayMS);
 
-        /** Modulator wave type mode selector. 0: SIN; 1: TRI
-            \param mode Defaults to 0, outOfRange = 0
-        */
-        void setModMode(int mode);
-
         /** Sets dry wet for flanger effect
             \param wet expects value from 0-1
         */
@@ -56,26 +52,14 @@ class Flanger
 
     private:
         float feedback;
-        float LfoDepth;
-        float LfoFreq;
         float delay;
         float sampleRate;
-        float LfoAmp;
-        float LfoPhase;
-        int8_t modType = 0;
         float dryWet;
+        float LfoAmp;
         static constexpr int32_t maxDelaySize = 960; // .02 * 48000 max size of 20ms
         DelayLine<float,maxDelaySize> delLine;
-        enum ModModes
-        {
-            SIN = 0,
-            TRI = 1
-        };
-        // processes LFO as triangle waveform; used in Process() function
-        float processLfoTri();
+        WaveTableOsc<256> osc;
 
-        // processes LFO as sine waveform; used in Process() function
-        float processLfoSin();
 };
 }
 #endif

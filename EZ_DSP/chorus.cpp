@@ -6,21 +6,19 @@ using namespace EZ_DSP;
 void ChorusEngine::init(float sample_rate)
 {
     sampleRate = sample_rate;
+    lfo.init(sampleRate);
     delLine.init();
     LfoAmp  = 0.f;
     feedback = .2f;
     setDelay(.75);
-
-    LfoPhase = 0.f;
     setLfoFrequency(.3f);
     setLfoDepth(.9f);
 }
 
 float ChorusEngine::process(float input)
 {
-    float lfoSig = processLfo();
-    delLine.setDelay(lfoSig*delay);
-    float out = delLine.read();
+    float out = delLine.read(lfo.tick()+delay);
+    
     delLine.write(input + out * feedback);
     
     return input *(1.f-dryWet) + out*dryWet; 
@@ -28,8 +26,9 @@ float ChorusEngine::process(float input)
 
 void ChorusEngine::setLfoDepth(float depth)
 {
-    depth = fclamp(depth, 0.f, .98f);
+    depth = fclamp(depth, 0.f, 1.f);
     LfoAmp = depth * delay;
+    lfo.setAmplitude(LfoAmp);
 }
 
 void ChorusEngine::setFeedback(float fback)
@@ -41,13 +40,13 @@ void ChorusEngine::setFeedback(float fback)
 void ChorusEngine::setLfoFrequency(float freq)
 {
     freq = fclamp(freq, 0.f, 10.f);
-    LfoFreq = freq/sampleRate;
+    lfo.setFrequency(freq);
 }
 
 void ChorusEngine::addPhaseOffset(float offset)
 {
     offset = fclamp(offset, 0.f, 1.f);
-    LfoPhase += offset;
+    lfo.add_phase_offset(offset*20.f);
 }
 
 void ChorusEngine::setDelay(float delayScaled)
@@ -62,6 +61,7 @@ void ChorusEngine::setDelayMs(float ms)
     ms = fclamp(ms, 10.f, 35.f);
     delay = ms * .001f * sampleRate;
     LfoAmp = fmin(LfoAmp, delay);
+    lfo.setAmplitude(LfoAmp);
 }
 
 void ChorusEngine::setDryWet(float wet)
@@ -69,60 +69,28 @@ void ChorusEngine::setDryWet(float wet)
     dryWet = fclamp(wet,0.f,1.f);
 }
 
-float ChorusEngine::processLfo()
-{
-    LfoPhase += LfoFreq;
-    if (LfoPhase >= 1.0f) LfoPhase -= 2.0f; 
-    return LfoAmp * sinf(TWOPI_F * LfoPhase);
-}
-
-
 //=================================================================
 // Actual stereo chorus
 void Chorus::init(float sample_rate)
 {
     engines[0].init(sample_rate);
     engines[1].init(sample_rate);
-    setPan(.25f, .75f);
     signalL = signalR = 0.f;
     gainFraction = .5f;
 }
-
+// Returns a mono sample, will be the left channel
 float Chorus::process(float input)
 {
-    signalL = 0.f;
-    signalR = 0.f;
-    for (int i=0; i < 2; i++)
-    {
-        float signal = engines[i].process(input);
-        signalL += (1.f-pans[i]) * signal;
-        signalR += pans[i] * signal;
-    }
-    signalL *= gainFraction;
-    signalR *= gainFraction;
+    signalL = engines[0].process(input)*gainFraction;
+    signalR = engines[1].process(input)*gainFraction;
     return signalL;
 }
-
-float Chorus::getLeft()
-{
-    return signalL;
-}
-
+// Returns the sample in the right channel
 float Chorus::getRight()
 {
     return signalR;
 }
 
-void Chorus::setPan(float panLeft, float panRight)
-{
-    pans[0] = fclamp(panLeft, 0.f, 1.f);
-    pans[1] = fclamp(panRight, 0.f, 1.f);
-}
-
-void Chorus::setPan(float pan)
-{
-    setPan(pan, pan);
-}
 
 void Chorus::setLfoDepth(float depthLeft, float depthRight)
 {

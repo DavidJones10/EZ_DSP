@@ -2,7 +2,7 @@
 #ifndef EZ_DSP_TREMOLO_H
 #define EZ_DSP_TREMOLO_H
 #include "dsp.h"
-#include "oscillator.h"
+#include "wave_table_osc.h"
 namespace EZ_DSP
 {
 
@@ -27,17 +27,11 @@ public:
      * @param depth expects value between 0-1
      */
     void setDepth(float depth);
-    /** Sets the waveform type for the lfo
-     * @param waveform 0:Sin, 1:Tri, 2:Saw, 3:Square
-     */
-    void setWaveform(int waveform);
-
 
 private:
-    int waveType;
     float drywet;
     float dc_offset;
-    Oscillator osc;
+    WaveTableOsc<256> osc;
 
 };
 } // namespace EZ_DSP

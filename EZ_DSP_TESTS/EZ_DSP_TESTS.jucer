@@ -22,6 +22,7 @@
       <FILE id="NZNmNp" name="overdrive.h" compile="0" resource="0" file="../EZ_DSP/overdrive.h"/>
       <FILE id="I447CO" name="phaser.cpp" compile="1" resource="0" file="../EZ_DSP/phaser.cpp"/>
       <FILE id="Pfyihq" name="phaser.h" compile="0" resource="0" file="../EZ_DSP/phaser.h"/>
+      <FILE id="DDjWz0" name="ring_buffer.h" compile="0" resource="0" file="../EZ_DSP/ring_buffer.h"/>
       <FILE id="RPsNue" name="tremolo.cpp" compile="1" resource="0" file="../EZ_DSP/tremolo.cpp"/>
       <FILE id="OoQR0u" name="tremolo.h" compile="0" resource="0" file="../EZ_DSP/tremolo.h"/>
       <FILE id="Eus8jJ" name="wave_table_osc.h" compile="0" resource="0"

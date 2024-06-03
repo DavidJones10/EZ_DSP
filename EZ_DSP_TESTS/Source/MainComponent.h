@@ -36,6 +36,8 @@ public:
             osc_freq = osc_freq_slider.getValue();
         }else if (slider == &osc_amp_slider){
             osc_amp = osc_amp_slider.getValue();
+        }else if (slider == &param_5_slider){
+            param_5 = param_5_slider.getValue();
         }
     }
     void comboBoxChanged(juce::ComboBox* box) override {
@@ -50,22 +52,22 @@ public:
 private:
     //==============================================================================
     // Your private member variables go here...
-    //EZ_DSP::Biquad biq;
+    EZ_DSP::Tremolo trem;
     EZ_DSP::Oscillator osc;
-    //EZ_DSP::Chorus chorus;
-    static const u_int16_t wave_size = 44100;
-    EZ_DSP::WaveTableOsc<40> wave_osc;
+    //EZ_DSP::Phaser phaser;
+    
     int osc_type = 1; float osc_freq = 1000.f; float osc_amp = 1.f;
     float param_1 = 10000.f; float param_2 = 2.f; float param_3 = 0.f;
+    float param_5 = 0.f;
     int param_4_value = 1;
     juce::Slider osc_freq_slider, osc_amp_slider,
-                param_1_slider, param_2_slider, param_3_slider;
+                param_1_slider, param_2_slider, param_3_slider, param_5_slider;
     juce::ComboBox osc_type_box, param_4_box;
     float sliderHeight = 20; float sliderWidth = 200; float gap = 10;
     const juce::StringArray osc_types = {"SINE","TRIANGLE","SAW","SQUARE"};
-    /*const juce::StringArray param_4_types = {"LOWPASS","HIGHPASS","BANDPASS",
-                                        "NOTCH","LOWSHELF","HIGHSHELF","PEAK"};*/
-    const juce::StringArray param_4_types = {"0","0.25","0.5","0.75","1.0"};
+    const juce::StringArray param_4_types = {"LOWPASS","HIGHPASS","BANDPASS",
+                                        "NOTCH","LOWSHELF","HIGHSHELF","PEAK"};
+    //const juce::StringArray param_4_types = {"1","2","3","4","5"};
     const juce::StringArray param_names = {"CUTOFF", "Q", "Gain"};
     juce::ToggleButton bypass;
 
