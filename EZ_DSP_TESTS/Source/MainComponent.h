@@ -47,13 +47,17 @@ public:
             param_4_value = param_4_box.getSelectedIdAsValue().getValue();
         }
     }
+    //bool keyPressed(const juce::KeyPress &key) override;
+    bool keyStateChanged(bool isKeyDown) override;
     
 
 private:
     //==============================================================================
     // Your private member variables go here...
-    EZ_DSP::Tremolo trem;
     EZ_DSP::Oscillator osc;
+    EZ_DSP::SynthVoice voices[8];
+    int midi_note = 60;
+    int octave_shifter = 0;
     //EZ_DSP::Phaser phaser;
     
     int osc_type = 1; float osc_freq = 1000.f; float osc_amp = 1.f;

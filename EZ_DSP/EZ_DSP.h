@@ -12,5 +12,7 @@
 #include "biquad.h"
 #include "wave_table_osc.h"
 #include "ring_buffer.h"
+#include "adsr.h"
+#include "synthVoice.h"
 
 #endif

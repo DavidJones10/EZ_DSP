@@ -118,6 +118,11 @@ namespace EZ_DSP
     inline float lerp(float sample1, float sample2, float inPhase){
         return (1-inPhase) * sample1 + inPhase * sample2;
     }
+    
+inline float midiToHz(int midiNote){
+    midiNote = clampInt(midiNote, 0, 127);
+    return 440.f * pow(2.f, ((float)midiNote - 69.f) / 12.f);
+}
 
 
 }
