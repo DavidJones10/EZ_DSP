@@ -7,12 +7,17 @@ namespace EZ_DSP
 {
 class Overdrive
 {
-    public:
+public:
+    float process(float input);
+    void init(float sample_rate);
+    void setDrive(float drive_);
+    void setPreGain(float gainPre);
+    void setPostGain(float gainPost);
 
-    private:
-        float drive;
-        float preGain;
-        float postGain;
+private:
+    float drive;
+    float preGain;
+    float postGain;
 };
 }
 #endif
