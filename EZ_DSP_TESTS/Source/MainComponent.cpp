@@ -1,4 +1,5 @@
 #include "MainComponent.h"
+#include <sstream>
 
 //==============================================================================
 MainComponent::MainComponent()
@@ -6,13 +7,20 @@ MainComponent::MainComponent()
     // Make sure you set the size of the component after
     // you add any child components.
     setSize (800, 600);
+    Timer::startTimerHz(30);
     
-    osc_amp_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    osc_amp_slider.setRange(0.f, 1.f);
-    osc_amp_slider.setName(juce::String("OSC AMP"));
-    osc_freq_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
-    osc_freq_slider.setName(juce::String("OSC FREQ"));
-    osc_freq_slider.setRange(20.f, 20000.f);
+    dec_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    dec_slider.setRange(0.f, 1000.f);
+    dec_slider.setName(juce::String("Decay"));
+    atk_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    atk_slider.setName(juce::String("Attack"));
+    atk_slider.setRange(0.f, 1000.f);
+    sus_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    sus_slider.setRange(0.f, 1.f);
+    sus_slider.setName(juce::String("Sustain"));
+    rel_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
+    rel_slider.setRange(0.f, 10000.f);
+    rel_slider.setName(juce::String("Release"));
     param_1_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
     param_1_slider.setRange(0.01f, 5.f);
     param_2_slider.setSliderStyle(juce::Slider::SliderStyle::LinearHorizontal);
@@ -32,19 +40,23 @@ MainComponent::MainComponent()
     param_3_slider.addListener(this);
     param_5_slider.addListener(this);
     param_4_box.addListener(this);
-    osc_amp_slider.addListener(this);
-    osc_freq_slider.addListener(this);
+    dec_slider.addListener(this);
+    atk_slider.addListener(this);
     osc_type_box.addListener(this);
+    rel_slider.addListener(this);
+    sus_slider.addListener(this);
     bypass.setToggleState(false, juce::NotificationType::sendNotification);
     addAndMakeVisible(bypass);
-    addAndMakeVisible(osc_amp_slider);
-    addAndMakeVisible(osc_freq_slider);
+    addAndMakeVisible(dec_slider);
+    addAndMakeVisible(atk_slider);
     addAndMakeVisible(osc_type_box);
     addAndMakeVisible(param_1_slider);
     addAndMakeVisible(param_2_slider);
     addAndMakeVisible(param_3_slider);
     addAndMakeVisible(param_4_box);
     addAndMakeVisible(param_5_slider);
+    addAndMakeVisible(rel_slider);
+    addAndMakeVisible(sus_slider);
     
     
     // Some platforms require permissions to open input channels so request that here
@@ -77,12 +89,12 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     // but be careful - it will be called on the audio thread, not the GUI thread.
 
     // For more details, see the help for AudioProcessor::prepareToPlay()
-    trem.init(sampleRate);
     
-    osc.init(sampleRate);
-    osc.setWaveType(EZ_DSP::Oscillator::WaveType::SAW);
-    osc.setFreq(osc_freq);
-    osc.setAmplitude(1.f);
+    for (int i = 0; i < 8; i++){
+        voices[i].init(sampleRate);
+        voices[i].setADSR(100.f, 0.f, 1.f, 1000.f);
+    }
+    
         
     //phaser.init(sampleRate);
     //phaser.setDryWet(1.f);
@@ -91,28 +103,33 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    osc.setWaveType(osc_type-1);
-    osc.setAmplitude(osc_amp);
-    osc.setFreq(osc_freq);
+    for (int i = 0; i < 8; i++){
+        voices[i].setWaveType(osc_type-1);
+        voices[i].setSustain(sustain);
+        voices[i].setAttack(attack);
+        voices[i].setRelease(release);
+        voices[i].setDecay(decay);
+    }
     
     //phaser.setFreq(param_5);
     //phaser.setFeedback(param_3);
     //phaser.setLfoDepth(param_2);
     //phaser.setLfoFrequency(param_1);
     //phaser.setNumPoles(param_4_value);
-    trem.setRate(param_1);
-    trem.setDepth(param_2);
+
     bufferToFill.clearActiveBufferRegion();
     auto buffer = bufferToFill.buffer;
     //auto* leftChannel = buffer->getWritePointer(0);
     //auto* rightChannel =  buffer->getWritePointer(1);
-    
     for (int i=0; i < buffer->getNumSamples();i++){
-
-        float osc_val = osc.tick();
+        
+        float osc_val = 0.f;
+        for (int i = 0; i < 8; i++){
+            osc_val += voices[i].tick();
+        }
         //float left_sample = leftChannel[i];
         //float right_sample = rightChannel[i];
-        float effectedL = trem.process(osc_val);
+        float effectedL = osc_val;
         float effectedR = effectedL;
         float out_sampleL = bypass.getToggleStateValue().getValue() ? osc_val : effectedL;
         float out_sampleR = bypass.getToggleStateValue().getValue() ? osc_val : effectedR;
@@ -136,15 +153,22 @@ void MainComponent::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
+    g.setColour(juce::Colours::white);
+    g.drawText(juce::String("Octave Shift: " + std::to_string(octave_shifter)), 10, 200, 100, 30, juce::Justification::centred);
+    g.drawText(juce::String("Atk"), 205, 40, 20,20,juce::Justification::centred);
+    g.drawText(juce::String("Dec"), 202, 70, 27,20,juce::Justification::centred);
+    g.drawText(juce::String("Sus"), 205, 100, 20,20,juce::Justification::centred);
+    g.drawText(juce::String("Rel"), 205, 130, 20,20,juce::Justification::centred);
     // You can add your drawing code here!
 }
 
 void MainComponent::resized()
 {
     osc_type_box.setBounds(10, 10, sliderWidth, 20);
-    osc_freq_slider.setBounds(10, osc_type_box.getBottom()+gap, sliderWidth, sliderHeight);
-    osc_amp_slider.setBounds(10, osc_freq_slider.getBottom()+gap, sliderWidth, sliderHeight);
+    atk_slider.setBounds(10, osc_type_box.getBottom()+gap, sliderWidth, sliderHeight);
+    dec_slider.setBounds(10, atk_slider.getBottom()+gap, sliderWidth, sliderHeight);
+    sus_slider.setBounds(10, dec_slider.getBottom()+gap, sliderWidth, sliderHeight);
+    rel_slider.setBounds(10, sus_slider.getBottom()+gap, sliderWidth, sliderHeight);
     
     float params_x = osc_type_box.getRight()+gap*2;
     param_4_box.setBounds(params_x, 10, sliderWidth, 20);
@@ -155,4 +179,73 @@ void MainComponent::resized()
     bypass.setBounds(500, 10, 100, 100);
     
     
+}
+/*
+bool MainComponent::keyPressed(const juce::KeyPress &key){
+    switch (key.getKeyCode()){
+        case 65: //a
+            break;
+        case 87: //w
+            break;
+        case 83: //s
+            break;
+        case 69: //e
+            break;
+        case 68: //d
+            break;
+        case 70: //f
+            break;
+        case 84: //t
+            break;
+        case 71: //g
+            break;
+        case 89: //y
+            break;
+        case 72: //h
+            break;
+        case 85: //u
+            break;
+        case 74: //j
+            break;
+        case 75: //k
+            break;
+        case 79: //o
+            break;
+        case 76: //l
+            break;
+        case 80: //p
+            break;
+        case 186: //;
+            break;
+        case 222: //'
+            break;
+        case 90: //z
+            break;
+        case 88: //x
+            break;
+    };
+    return true;
+}
+*/
+bool MainComponent::keyStateChanged(bool isKeyDown){
+    if (isKeyDown){
+        if (juce::KeyPress::isKeyCurrentlyDown(65)){
+            voices[0].noteOn(60+octave_shifter);
+        }
+        if (juce::KeyPress::isKeyCurrentlyDown(90)){
+            octave_shifter -= 12;
+        }
+        if (juce::KeyPress::isKeyCurrentlyDown(88)){
+            octave_shifter += 12;
+        }
+    }else{
+        if (!juce::KeyPress::isKeyCurrentlyDown(65)){
+            voices[0].noteOff();
+        }
+    }
+    return true;
+}
+
+void MainComponent::timerCallback(){
+    repaint();
 }
